@@ -1,0 +1,4 @@
+.copilot
+.airflow-venv
+*/__pycache__
+*.pyc
