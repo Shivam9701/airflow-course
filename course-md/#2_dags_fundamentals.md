@@ -212,7 +212,110 @@ with DAG(
 
 ---
 
-## 🧪 6. `parameterized_dag.py`
+## 🔄 6. `fan_out_fan_in_dag.py`
+
+### ✅ Purpose:
+
+Demonstrates the fan-out and fan-in pattern, where multiple tasks run in parallel and then converge back to a single task.
+
+### ⚙️ Features:
+
+* Uses `EmptyOperator` for start, join, and end markers
+* Parallel execution of tasks using `PythonOperator`
+* Converging tasks back to a single join point
+
+### 🧠 Key Concepts:
+
+* Fan-out: Splitting tasks into parallel execution
+* Fan-in: Joining parallel tasks back into a single flow
+* Useful for processing multiple datasets or parallel computations
+
+### 🔧 Code Snippet:
+
+```python
+from airflow import DAG
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+def log_task(msg):
+    print(msg)
+
+with DAG(
+    dag_id="fan_out_fan_in_dag",
+    start_date=datetime(2024, 1, 1),
+    schedule=None,
+    catchup=False,
+    tags=["fanout", "fanin", "empty_operator", "operator"],
+) as dag:
+
+    start = EmptyOperator(task_id="start")
+
+    task1 = PythonOperator(
+        task_id="task1",
+        python_callable=log_task,
+        op_args=["Running Task 1"],
+    )
+
+    task2 = PythonOperator(
+        task_id="task2",
+        python_callable=log_task,
+        op_args=["Running Task 2"],
+    )
+
+    task3 = PythonOperator(
+        task_id="task3",
+        python_callable=log_task,
+        op_args=["Running Task 3"],
+    )
+
+    join = EmptyOperator(task_id="join")
+    finish = EmptyOperator(task_id="finish")
+
+    start >> [task1, task2, task3] >> join >> finish
+```
+
+---
+
+## 🛠️ 7. `bash_op.py`
+
+### ✅ Purpose:
+
+Demonstrates the use of `BashOperator` to execute shell commands within a DAG.
+
+### ⚙️ Features:
+
+* Executes a simple bash command
+* Useful for running shell scripts or system commands
+
+### 🧠 Key Concepts:
+
+* `BashOperator` bridges Airflow with shell commands
+* Ideal for tasks like file manipulation, logging, or triggering external scripts
+
+### 🔧 Code Snippet:
+
+```python
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from datetime import datetime
+
+with DAG(
+    dag_id="bash_operator_example",
+    start_date=datetime(2024, 1, 1),
+    schedule=None,
+    catchup=False,
+    tags=["bash", "operator", "example"],
+) as dag:
+
+    bash_task = BashOperator(
+        task_id="print_hello", bash_command="echo 'Hello from BashOperator!'"
+    )
+```
+
+---
+
+## 🧪 8. `parameterized_dag.py`
 
 ### ✅ Purpose:
 
@@ -253,16 +356,18 @@ with DAG(
 
 ---
 
-## ✅ Summary Table
+## ✅ Updated Summary Table
 
-| DAG Name            | Key Feature                   | Operator Type        |
-| ------------------- | ----------------------------- | -------------------- |
+| DAG Name              | Key Feature                   | Operator Type        |
+| --------------------- | ----------------------------- | -------------------- |
 | `my_first_proper_dag` | Basic DAG Structure           | PythonOperator       |
-| `linear_tasks`      | Sequential Dependency Flow    | PythonOperator       |
-| `schedule_5_mins`   | Cron-based scheduling         | PythonOperator       |
-| `branch_dag`        | Conditional Path Execution    | BranchPythonOperator |
-| `basic_retry_dag`   | Retry on Failure              | PythonOperator       |
-| `parameterized_dag` | Parameterized Manual Triggers | PythonOperator       |
+| `linear_tasks`        | Sequential Dependency Flow    | PythonOperator       |
+| `schedule_5_mins`     | Cron-based scheduling         | PythonOperator       |
+| `branch_dag`          | Conditional Path Execution    | BranchPythonOperator |
+| `basic_retry_dag`     | Retry on Failure              | PythonOperator       |
+| `parameterized_dag`   | Parameterized Manual Triggers | PythonOperator       |
+| `fan_out_fan_in_dag`  | Fan-Out and Fan-In Pattern    | PythonOperator       |
+| `bash_operator`       | Execute Shell Commands        | BashOperator         |
 
 ---
 
